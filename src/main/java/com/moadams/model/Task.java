@@ -9,7 +9,7 @@ public class Task implements Comparable<Task> {
     private final int priority;
     private final Instant createdTimestamp;
     private final String payload;
-    private final int retryCount;
+    private int retryCount;
 
     public Task(String name, int priority, String payload) {
         this.id = UUID.randomUUID();
@@ -42,6 +42,10 @@ public class Task implements Comparable<Task> {
 
     public int getRetryCount() {
         return retryCount;
+    }
+
+    public void incrementRetryCount() {
+        this.retryCount++;
     }
 
     @Override
