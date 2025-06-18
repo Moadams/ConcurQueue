@@ -11,13 +11,13 @@ public class Task implements Comparable<Task> {
     private final String payload;
     private final int retryCount;
 
-    public Task(UUID id, String name, int priority, Instant createdTimestamp, String payload, int retryCount) {
-        this.id = id;
+    public Task(String name, int priority, String payload) {
+        this.id = UUID.randomUUID();
         this.name = name;
         this.priority = priority;
-        this.createdTimestamp = createdTimestamp;
+        this.createdTimestamp = Instant.now();
         this.payload = payload;
-        this.retryCount = retryCount;
+        this.retryCount = 0;
     }
 
     public UUID getId() {
