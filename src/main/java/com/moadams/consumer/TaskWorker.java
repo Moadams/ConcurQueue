@@ -1,7 +1,7 @@
 package com.moadams.consumer;
 
 import com.moadams.model.Task;
-import com.moadams.model.TaskStatus;
+import com.moadams.enums.TaskStatus;
 import com.moadams.util.TaskLogger;
 
 import java.util.UUID;
