@@ -1,4 +1,4 @@
-package com.moadams.model;
+package com.moadams.enums;
 
 public enum TaskStatus {
     SUBMITTED,
