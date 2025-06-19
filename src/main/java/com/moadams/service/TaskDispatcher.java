@@ -2,7 +2,7 @@ package com.moadams.service;
 
 import com.moadams.consumer.TaskWorker;
 import com.moadams.model.Task;
-import com.moadams.model.TaskStatus;
+import com.moadams.enums.TaskStatus;
 import com.moadams.producer.TaskProducer;
 import com.moadams.util.TaskLogger;
 
