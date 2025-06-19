@@ -1,7 +1,7 @@
 package com.moadams.service;
 
 import com.moadams.model.Task;
-import com.moadams.model.TaskStatus;
+import com.moadams.enums.TaskStatus;
 import com.moadams.util.JsonExporter;
 import com.moadams.util.TaskLogger;
 
@@ -40,6 +40,7 @@ public class TaskMonitor implements Runnable {
     public void run() {
         TaskLogger.log("TaskMonitor started");
         long lastExportTime =System.currentTimeMillis();
+        int exportCount = 0;
 
         try{
             while(!Thread.currentThread().isInterrupted()){
@@ -63,10 +64,15 @@ public class TaskMonitor implements Runnable {
 
                 detectStalledTasks();
 
-                if(exportFilePath != null && System.currentTimeMillis() - lastExportTime >= 60000){
-                    JsonExporter.exportTaskStatuses(taskStates, exportFilePath);
-                    lastExportTime = System.currentTimeMillis();
-                    TaskLogger.log("MONITOR - Exported task statuses to " + exportFilePath);
+                if(exportFilePath != null && !taskStates.isEmpty()) {
+                    long currentTime = System.currentTimeMillis();
+
+                    if(currentTime - lastExportTime >= 15000 || (exportCount == 0 && taskStates.size() > 0)){
+                        JsonExporter.exportTaskStatuses(taskStates, exportFilePath);
+                        lastExportTime = currentTime;
+                        exportCount++;
+                        TaskLogger.log("MONITOR - Exported task statuses to " + exportFilePath + " (Export #" + exportCount + ")");
+                    }
                 }
             }
         } catch (InterruptedException e) {
@@ -93,7 +99,6 @@ public class TaskMonitor implements Runnable {
     }
 
     private void detectStalledTasks(){
-        long stalledThresholdMillis = 5000;
         long processingTasks = taskStates.values().stream().filter(status -> status == TaskStatus.PROCESSING).count();
         if (processingTasks > 0 && taskQueue.isEmpty() && ((ThreadPoolExecutor)workerPool).getActiveCount() == 0) {
 
