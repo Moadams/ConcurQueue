@@ -2,6 +2,7 @@ package com.moadams.producer;
 
 import com.moadams.model.Task;
 import com.moadams.model.TaskStatus;
+import com.moadams.util.TaskLogger;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -29,7 +30,7 @@ public class TaskProducer implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Producer " + producerName + " started");
+        TaskLogger.log("Producer " + producerName + " started");
         for (int i = 0; i < tasksToGenerate; i++) {
             int priority;
             String taskName;
@@ -50,14 +51,14 @@ public class TaskProducer implements Runnable {
             try{
                 taskQueue.put(task);
                 taskStates.put(task.getId(), TaskStatus.SUBMITTED);
-                System.out.println(producerName + " submitted " + task);
+                TaskLogger.log(producerName + " submitted " + task.getName());
                 Thread.sleep(generationIntervalMillis);
             }catch(InterruptedException e){
-                System.out.println(producerName + " interrupted while submitting task " + task.getName());
+                TaskLogger.logError(producerName + " interrupted while submitting task " + task.getName());
                 Thread.currentThread().interrupt();
                 break;
             }
         }
-        System.out.println(producerName + " finished generating " + tasksToGenerate + " tasks");
+        TaskLogger.log(producerName + " finished generating " + tasksToGenerate + " tasks");
     }
 }
