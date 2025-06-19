@@ -56,4 +56,10 @@ public class Task implements Comparable<Task> {
         }
         return priorityCompare;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Task{id=%s, name='%s', priority=%d, retries=%d}",
+                id.toString().substring(0, 8), name, priority, retryCount);
+    }
 }
