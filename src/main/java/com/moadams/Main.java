@@ -1,5 +1,6 @@
 package com.moadams;
 
+import com.moadams.enums.DemoType;
 import com.moadams.service.TaskDispatcher;
 import com.moadams.service.TaskMonitor;
 import com.moadams.util.TaskLogger;
@@ -27,41 +28,47 @@ public class Main {
         displayWelcomeMessage();
         mainMenuLoop();
         scanner.close();
-        TaskLogger.log("ConcurQueue Application Exited.");
+        TaskLogger.log("🚪 ConcurQueue Application Exited. Goodbye!");
     }
 
     private static void clearConsole() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        for (int i = 0; i < 50; ++i) System.out.println();
+        for (int i = 0; i < 3; ++i) System.out.println();
     }
 
     private static void displayWelcomeMessage() {
         clearConsole();
-        TaskLogger.printLine(CYAN);
-        System.out.println(BOLD + GREEN + "         Welcome to ConcurQueue!" + RESET);
-        System.out.println(BOLD + YELLOW + " A Multithreaded Job Processing Platform" + RESET);
-        TaskLogger.printLine(CYAN);
-        System.out.println("\n" + BLUE + "This application demonstrates core Java concurrency concepts:" + RESET);
-        System.out.println(BLUE + " - Race Conditions and their fixes (using AtomicInteger)" + RESET);
-        System.out.println(BLUE + " - Deadlocks and their resolution (using consistent lock ordering)" + RESET);
-        TaskLogger.printLine(CYAN);
-        System.out.println("\nPress Enter to continue...");
+
+
+        TaskLogger.printSectionHeader("🎯 WELCOME TO CONCURQUEUE 🎯", CYAN);
+
+        String welcomeMessage = BOLD + GREEN + "A Multithreaded Job Processing Platform" + RESET + "\n\n" +
+                BLUE + "🧵 This application demonstrates core Java concurrency concepts:" + RESET + "\n" +
+                GREEN + "  ✓ Race Conditions and their fixes (using AtomicInteger)" + RESET + "\n" +
+                GREEN + "  ✓ Deadlocks and their resolution (using consistent lock ordering)" + RESET + "\n" +
+                GREEN + "  ✓ Thread-safe data structures and synchronization" + RESET;
+
+        TaskLogger.printBox(welcomeMessage, CYAN);
+
+        System.out.println("\n" + YELLOW + "🚀 Press Enter to continue to the main menu..." + RESET);
         scanner.nextLine();
     }
 
     private static void mainMenuLoop() {
         while (true) {
             clearConsole();
-            TaskLogger.printLine(PURPLE);
-            System.out.println(BOLD + PURPLE + "        Main Menu" + RESET);
-            TaskLogger.printLine(PURPLE);
-            System.out.println(YELLOW + "1. Run Race Condition Fix Demonstration" + RESET);
-            System.out.println(YELLOW + "2. Run Deadlock Demonstration (will likely get stuck!)" + RESET);
-            System.out.println(YELLOW + "3. Run Deadlock Resolution Demonstration (fixed order)" + RESET);
-            System.out.println(YELLOW + "4. Exit Application" + RESET);
-            TaskLogger.printLine(PURPLE);
-            System.out.print(GREEN + "Please select an option: " + RESET);
+
+            TaskLogger.printSectionHeader("🎮 MAIN MENU", PURPLE);
+
+            String menuOptions = YELLOW + "1. " + GREEN + "🏁 Run Race Condition Fix Demonstration" + RESET + "\n" +
+                    YELLOW + "2. " + RED + "💀 Run Deadlock Demonstration (will likely get stuck!)" + RESET + "\n" +
+                    YELLOW + "3. " + GREEN + "🔧 Run Deadlock Resolution Demonstration (fixed order)" + RESET + "\n" +
+                    YELLOW + "4. " + BLUE + "🚪 Exit Application" + RESET;
+
+            TaskLogger.printBox(menuOptions, PURPLE);
+
+            System.out.print("\n" + GREEN + BOLD + "🎯 Please select an option (1-4): " + RESET);
 
             String choice = scanner.nextLine().trim();
 
@@ -76,9 +83,10 @@ public class Main {
                     runDemo(DemoType.DEADLOCK_RESOLUTION);
                     break;
                 case "4":
+                    System.out.println("\n" + GREEN + "👋 Thank you for using ConcurQueue! Goodbye!" + RESET);
                     return;
                 default:
-                    System.out.println(RED + "Invalid option. Please try again." + RESET);
+                    System.out.println("\n" + RED + BOLD + "❌ Invalid option. Please select 1, 2, 3, or 4." + RESET);
                     try {
                         TimeUnit.SECONDS.sleep(2);
                     } catch (InterruptedException e) {
@@ -88,73 +96,95 @@ public class Main {
         }
     }
 
-    private enum DemoType {
-        RACE_CONDITION_FIX,
-        DEADLOCK_DEMO,
-        DEADLOCK_RESOLUTION
-    }
+
 
     private static void runDemo(DemoType demoType) {
         clearConsole();
-        TaskLogger.printLine(CYAN);
+
         switch (demoType) {
             case RACE_CONDITION_FIX:
-                System.out.println(BOLD + GREEN + "Running Race Condition Fix Demonstration..." + RESET);
-                TaskLogger.log("\n" + BOLD + "--- Race Condition Fix Explanation ---" + RESET);
-                TaskLogger.log("The 'processedTaskCount' is handled using " + YELLOW + "AtomicInteger" + RESET + ", " +
+                TaskLogger.printSectionHeader("🏁 RACE CONDITION FIX DEMONSTRATION", GREEN);
+
+                String raceFixExplanation = BOLD + "🔍 Race Condition Fix Explanation:" + RESET + "\n\n" +
+                        "The 'processedTaskCount' is handled using " + YELLOW + BOLD + "AtomicInteger" + RESET + ", " +
                         "which ensures thread-safe increments and accurate final counts, " +
-                        "preventing the race condition that would occur with a simple 'int' variable.");
-                TaskLogger.log("Observe the 'Total processed' count in worker logs and monitor logs for correctness. It should " + GREEN + "ALWAYS increment consistently" + RESET + ".");
-                TaskLogger.printLine(CYAN);
+                        "preventing the race condition that would occur with a simple 'int' variable.\n\n" +
+                        GREEN + "📊 What to observe:" + RESET + "\n" +
+                        "• Watch the 'Total processed' count in worker logs\n" +
+                        "• Monitor logs show consistent increments\n" +
+                        "• " + GREEN + BOLD + "Count should ALWAYS increment consistently" + RESET;
+
+                TaskLogger.printBox(raceFixExplanation, GREEN);
                 runSimulation(false);
                 break;
+
             case DEADLOCK_DEMO:
-                System.out.println(BOLD + RED + "Running Deadlock Demonstration..." + RESET);
-                TaskLogger.log("\n" + BOLD + "--- Deadlock Explanation ---" + RESET);
-                TaskLogger.log("Worker threads will attempt to acquire two shared locks (LOCK_A, LOCK_B) in " + RED + "conflicting orders" + RESET + ".");
-                TaskLogger.log("Some workers will try LOCK_A then LOCK_B. Others will try LOCK_B then LOCK_A.");
-                TaskLogger.log("This conflicting order " + RED + BOLD + "WILL LIKELY LEAD TO A DEADLOCK" + RESET + ", where workers get stuck waiting for each other indefinitely.");
-                TaskLogger.log("Look for " + YELLOW + "[LOCK_DEBUG]" + RESET + " messages and notice when workers stop progressing.");
-                TaskLogger.log("You may need to press " + BOLD + "Ctrl+C" + RESET + " to terminate the application if it deadlocks.");
-                TaskLogger.printLine(CYAN);
+                TaskLogger.printSectionHeader("💀 DEADLOCK DEMONSTRATION", RED);
+
+                String deadlockExplanation = BOLD + RED + "⚠️  DEADLOCK EXPLANATION:" + RESET + "\n\n" +
+                        "Worker threads will attempt to acquire two shared locks (LOCK_A, LOCK_B) in " +
+                        RED + BOLD + "conflicting orders" + RESET + ".\n\n" +
+                        "• Some workers: LOCK_A → LOCK_B\n" +
+                        "• Other workers: LOCK_B → LOCK_A\n\n" +
+                        RED + BOLD + "⚡ This WILL LIKELY CAUSE A DEADLOCK!" + RESET + "\n\n" +
+                        YELLOW + "👀 What to watch for:" + RESET + "\n" +
+                        "• Look for " + PURPLE + "[LOCK_DEBUG]" + RESET + " messages\n" +
+                        "• Notice when workers stop progressing\n" +
+                        "• You may need " + BOLD + "Ctrl+C" + RESET + " to terminate";
+
+                TaskLogger.printBox(deadlockExplanation, RED);
                 runSimulation(true);
                 break;
+
             case DEADLOCK_RESOLUTION:
-                System.out.println(BOLD + GREEN + "Running Deadlock Resolution Demonstration..." + RESET);
-                TaskLogger.log("\n" + BOLD + "--- Deadlock Resolution Explanation ---" + RESET);
-                TaskLogger.log("Worker threads will acquire two shared locks (LOCK_A, LOCK_B) using a " + GREEN + "consistent, predefined order" + RESET + " (always LOCK_A then LOCK_B).");
-                TaskLogger.log("This consistent ordering " + GREEN + BOLD + "PREVENTS DEADLOCKS" + RESET + ", allowing all tasks to be processed successfully.");
-                TaskLogger.log("Observe that all " + YELLOW + "[LOCK_DEBUG]" + RESET + " messages show successful lock acquisition and release, and tasks complete as expected.");
-                TaskLogger.printLine(CYAN);
+                TaskLogger.printSectionHeader("🔧 DEADLOCK RESOLUTION DEMONSTRATION", GREEN);
+
+                String resolutionExplanation = BOLD + GREEN + "🛠️  DEADLOCK RESOLUTION EXPLANATION:" + RESET + "\n\n" +
+                        "Worker threads acquire locks using a " + GREEN + BOLD + "consistent, predefined order" + RESET +
+                        " (always LOCK_A then LOCK_B).\n\n" +
+                        GREEN + BOLD + "✅ This prevents deadlocks completely!" + RESET + "\n\n" +
+                        BLUE + "📈 What you'll see:" + RESET + "\n" +
+                        "• All " + PURPLE + "[LOCK_DEBUG]" + RESET + " messages show successful operations\n" +
+                        "• Tasks complete successfully without hanging\n" +
+                        "• Consistent processing throughout the demonstration";
+
+                TaskLogger.printBox(resolutionExplanation, GREEN);
                 runSimulation(false);
                 break;
         }
 
-        System.out.println("\n" + BOLD + GREEN + "Demonstration Finished. Press Enter to return to Main Menu..." + RESET);
+        System.out.println("\n");
+        TaskLogger.printLine(CYAN);
+        System.out.println(BOLD + GREEN + "🎉 Demonstration Complete! Press Enter to return to Main Menu..." + RESET);
+        TaskLogger.printLine(CYAN);
         scanner.nextLine();
     }
 
     private static void runSimulation(boolean introduceDeadlock) {
+        System.out.println(CYAN + "🚀 Initializing simulation..." + RESET);
+
         int workerPoolSize = 5;
         int queueCapacity = 20;
-        long producerGenerationInterval = 500;
-        int tasksPerProducer = 20;
-        long monitorInterval = 3000;
+        long producerGenerationInterval = 1000;
+        int tasksPerProducer = 10;
+        long monitorInterval = 5000;
         String jsonExportPath = "task_statuses.json";
 
         TaskDispatcher dispatcher = new TaskDispatcher(workerPoolSize, queueCapacity, LOCK_A, LOCK_B, introduceDeadlock);
 
         Thread shutdownHook = new Thread(() -> {
-            TaskLogger.log("Simulation Shutdown hook activated. Shutting down ConcurQueue...");
+            TaskLogger.log("🛑 Simulation Shutdown hook activated. Shutting down ConcurQueue...");
             dispatcher.shutdown();
         });
         Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+        TaskLogger.printLine(BLUE);
+        TaskLogger.log("🎬 Starting simulation components...");
 
         dispatcher.startWorkers();
 
         dispatcher.startProducer("Producer-HighPriority-1", tasksPerProducer, producerGenerationInterval);
         dispatcher.startProducer("Producer-LowPriority-1", tasksPerProducer, producerGenerationInterval);
-        dispatcher.startProducer("Producer-MixedPriority-2", tasksPerProducer, producerGenerationInterval * 2);
 
         Thread monitorThread = new Thread(new TaskMonitor(
                 dispatcher.getTaskQueue(),
@@ -172,6 +202,7 @@ public class Main {
             TaskLogger.logError("Simulation interrupted: " + e.getMessage());
             Thread.currentThread().interrupt();
         } finally {
+            TaskLogger.log("🔄 Cleaning up simulation...");
             monitorThread.interrupt();
             try {
                 monitorThread.join();
@@ -182,6 +213,7 @@ public class Main {
             dispatcher.shutdown();
 
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            TaskLogger.logSuccess("✅ Simulation cleanup completed successfully!");
         }
     }
 }
